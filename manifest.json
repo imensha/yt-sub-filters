@@ -1,0 +1,19 @@
+{
+    "manifest_version": 2,
+    "name": "YouTube Subscription Filters",
+    "version": "0.1",
+    "description": "Adds the ability to filter the YouTube subscription view on the web.",
+    "icons": {
+        "48": "icons/border-48.png"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "*://www.youtube.com/feed/subscriptions"
+            ],
+            "js": [
+                "yt-sub-filters.js"
+            ]
+        }
+    ]
+}
