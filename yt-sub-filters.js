@@ -1,28 +1,55 @@
-const VIDEO_TILE_SELECTOR = "ytd-grid-video-renderer"
-const VIDEO_TITLE_SELECTOR = "#video-title"
+const g = {
+    Selectors: {
+        Video: "ytd-grid-video-renderer",
+        VideoTitle: "#video-title"
+    }
+};
 
-console.log(window, window.onload);
+async function parseFilters() {
+    // get filters from local storage
+    const pGetStorage = browser.storage.local.get('yt_exclude')
+    const { yt_exclude: filterText } = await pGetStorage
+    
+    let filterTexts = filterText.split("\n")
+    // make filters lower case
+    filterTexts = filterTexts.map(text => text.toLowerCase())
+    // exclude filters beginning with #, consider these comments
+    filterTexts = filterTexts.filter(
+        text => text[0] != "#" && text.length > 0
+    )
 
-const YT_EXCLUDE = [
-    /* phrases to exclude */
-]
+    g.Filters = {
+        Exclude: filterTexts.map(filter => filter.toLowerCase())
+    }
 
-setTimeout(() => {
-    const $ = document.querySelectorAll.bind(document)
-    const elVideos = $(VIDEO_TILE_SELECTOR)
-    console.log(elVideos)
+    return pGetStorage
+}
+async function main() {
+    while (1) {
+        // initialize
+        await parseFilters();
 
-    // only filter videos if global variable yt_exclude is defined
-    console.log("Exclude: ", YT_EXCLUDE)
-        // iterate video tiles
-    for (const el of elVideos) {
-        const title = el.querySelector(VIDEO_TITLE_SELECTOR).innerHTML
+        // get videos
+        const $ = document.querySelectorAll.bind(document)
+        const elVideos = $(g.Selectors.Video)
 
-        // hide element if title matches exclude string
-        for (const filter of YT_EXCLUDE) {
-            if (title.includes(filter)) {
-                el.style.display = "none"
+        // only filter videos if global variable yt_exclude is defined
+        console.log("Exclude: ", g.Filters.Exclude)
+            // iterate video tiles
+        for (const el of elVideos) {
+            const title = el.querySelector(g.Selectors.VideoTitle).innerHTML.toLowerCase()
+
+            // hide element if title matches exclude string
+            for (const filter of g.Filters.Exclude) {
+                if (title.includes(filter)) {
+                    el.style.display = "none"
+                }
             }
         }
+
+        // rerun in 2 seconds
+        await new Promise((res, rej) => setTimeout(res, 4000))
     }
-}, 5000)
+}
+
+setTimeout(main, 2000)

@@ -15,5 +15,24 @@
                 "yt-sub-filters.js"
             ]
         }
-    ]
+    ],
+    "browser_action": {
+        "default_title": "YouTube Subscription Filters"
+    },
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "options_ui": {
+        "page": "options/index.html",
+        "browser_style": true
+    },
+    "permissions": [
+        "storage"
+    ],
+    "applications": {
+      "gecko": {
+          "id": "yt-subscription-filters@kahr.me",
+          "strict_min_version": "57.0a1"
+      }
+  }
 }
